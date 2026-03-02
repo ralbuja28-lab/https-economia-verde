@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barrios Inteligentes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- VARIABLES DE DEGRADADOS Y COLORES --- */
+        :root {
+            --green-dark: #0f3e22;
+            --green-main: #247543;
+            --green-light: #44a86b;
+            --green-accent: #a3e4be;
+            --grad-primary: linear-gradient(135deg, #1b5e20 0%, #0d3b14 100%);
+            --grad-secondary: linear-gradient(135deg, #44a86b 0%, #247543 100%);
+            --bg-color: #f4f9f6;
+            --text-dark: #2c3e35;
+            --text-light: #5c7566;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        /* --- RESET Y ESTILOS BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* --- CABECERA FIJA (MATERIAS + NAVEGACIÓN) --- */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+       /* BARRA SUPERIOR DE MATERIAS */
+        .top-subjects-bar {
+            background: var(--grad-primary);
+            width: 100%;
+            padding: 12px 15px; 
+            display: flex;
+            justify-content: center;
+            align-items: stretch; 
+            flex-wrap: wrap; 
+            gap: 18px; /* <-- AUMENTAMOS LA SEPARACIÓN (antes estaba en 10px) */
+        }
+
+        .subject-pill {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 12px; /* Reducimos apenitas el espacio interno del botón */
+            border-radius: 15px; 
+            font-size: 0.8rem; /* Bajamos la letra de 0.85 a 0.8 para compensar */
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            
+            /* --- REGLAS PARA CONTROLAR EL TEXTO LARGO --- */
+            white-space: normal; 
+            max-width: 200px; /* Hacemos que Matemáticas se recoja un poco más hacia el centro */
+            text-align: center;
+            line-height: 1.3;
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        .subject-pill:hover {
+            background: var(--white);
+            color: var(--green-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* NAVEGACIÓN PRINCIPAL (GLASSMORPHISM) */
+        nav {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: var(--green-main);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--grad-secondary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--green-main);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .lang-btn {
+            background: var(--green-main);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .lang-btn:hover {
+            background: var(--green-dark);
+        }
+
+        /* --- SECCIÓN HERO (INICIO) --- */
+        /* --- SECCIÓN HERO (INICIO) --- */
+        #inicio {
+            position: relative; /* <-- ESTO ES NUEVO Y MUY IMPORTANTE */
+            height: 100vh;
+            background: linear-gradient(rgba(15, 62, 34, 0.8), rgba(36, 117, 67, 0.6)), url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: var(--white); padding: 120px 20px 0;
+        }
+        #inicio h1 {
+            font-size: 4.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 15px;
+            text-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); background: linear-gradient(to right, #fff, var(--green-accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        #inicio h2 { font-size: 1.5rem; font-weight: 300; margin-bottom: 30px; color: var(--green-accent); }
+        #inicio p { max-width: 600px; font-size: 1.1rem; margin-bottom: 40px; opacity: 0.9; }
+
+        /* NUEVO: ESTILOS PARA LOS INTEGRANTES EN LA ESQUINA */
+        .hero-integrantes {
+            position: absolute;
+            bottom: 25px; /* Separación desde abajo */
+            left: 30px; /* Separación desde la izquierda */
+            text-align: left;
+            font-size: 0.75rem; /* Tamaño de letra pequeñito */
+            color: rgba(255, 255, 255, 0.7); /* Blanco semi-transparente para que no estorbe */
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+        }
+        .hero-integrantes strong {
+            color: var(--green-accent);
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        /* --- CONTENEDORES Y ANIMACIÓN SCROLL --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--green-dark);
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--grad-secondary);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- GRIDS DE INFORMACIÓN --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--grad-secondary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 50px rgba(36, 117, 67, 0.08);
+        }
+
+        .info-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .info-card h3 {
+            color: var(--green-main);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .info-card p,
+        .info-card li {
+            color: var(--text-light);
+        }
+
+        .objetivos-list {
+            list-style: none;
+        }
+
+        .objetivos-list li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .objetivos-list li::before {
+            content: "🌿";
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        /* --- EQUIPO --- */
+        .grid-integrantes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .card-integrante {
+            background: var(--white);
+            padding: 30px 15px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            width: 250px;
+            text-align: center;
+        }
+
+        .card-integrante:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(36, 117, 67, 0.1);
+        }
+
+        .foto-carnet {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            background-color: var(--bg-color);
+            margin-bottom: 15px;
+            padding: 4px;
+            border: 2px dashed var(--green-light);
+            transition: transform 0.4s ease;
+        }
+
+        .card-integrante:hover .foto-carnet {
+            transform: rotate(5deg) scale(1.05);
+            border-style: solid;
+        }
+
+        .card-integrante h4 {
+            font-size: 1rem;
+            color: var(--green-dark);
+            line-height: 1.3;
+        }
+
+        /* --- MODAL ELEGANTE --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 62, 34, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+        }
+
+       .modal-content {
+            background: var(--white);
+            padding: 30px; 
+            width: 90%;
+            max-width: 850px; 
+            border-radius: 24px;
+            position: relative;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-height: 90vh; 
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #a0a0a0;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            color: var(--green-dark);
+        }
+
+        #modalTitle {
+            color: var(--green-main);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        #modalText {
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+
+        /* --- CONTENEDORES MULTIMEDIA --- */
+        .media-container {
+            margin-top: 20px;
+            display: none; 
+            width: 100%; 
+        }
+
+        .media-container video, .media-container img {
+            width: 100%;
+            max-width: 100%; 
+            height: auto; 
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* --- ESTILOS PARA LOS BOTONES SIMÉTRICOS ADAPTATIVOS --- */
+        .ref-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; 
+            align-items: stretch;
+            gap: 15px;
+            margin: 20px auto;
+            max-width: 740px;
+        }
+
+        .ref-btn {
+            background: var(--green-main);
+            color: var(--white);
+            border: none;
+            width: 220px; 
+            min-height: 55px;
+            padding: 12px 15px;
+            border-radius: 20px; 
+            font-weight: 600;
+            font-size: 0.85rem; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; 
+            gap: 5px;
+            box-shadow: 0 4px 10px rgba(36, 117, 67, 0.2);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .ref-btn:hover, .ref-btn.active {
+            background: var(--green-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(15, 62, 34, 0.4);
+        }
+
+        .ref-content-box {
+            display: none; 
+            background: var(--bg-color);
+            border-left: 5px solid var(--green-main);
+            border-radius: 0 15px 15px 0;
+            padding: 25px;
+            margin: 10px auto 0;
+            text-align: left;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: slideDown 0.4s ease;
+            width: 100%;
+            max-width: 740px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: var(--green-dark);
+            color: var(--green-accent);
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            #inicio h1 { font-size: 3rem; }
+            .nav-links { display: none; }
+            nav { justify-content: space-between; }
+            .info-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px 15px; width: 95%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="top-subjects-bar">
+            <button class="subject-pill" onclick="abrirModal('bio', '🧬')" data-i18n="subj_bio">Biología</button>
+            <button class="subject-pill" onclick="abrirModal('edu', '🏃')" data-i18n="subj_edu">Educ. Física</button>
+            <button class="subject-pill" onclick="abrirModal('emp', '💡')" data-i18n="subj_emp">Emprendimiento</button>
+            <button class="subject-pill" onclick="abrirModal('fis', '⚡')" data-i18n="subj_fis">Física</button>
+            <button class="subject-pill" onclick="abrirModal('lit', '✍️')" data-i18n="subj_lit">Lengua y Lit.</button>
+            <button class="subject-pill" onclick="abrirModal('mat', '➗')" data-i18n="subj_mat">Matemáticas, Números Complejos y Métodos de Demostración Matemática</button>
+            <button class="subject-pill" onclick="abrirModal('qui', '🧪')" data-i18n="subj_qui">Química</button>
+            <button class="subject-pill" onclick="abrirModal('ane', '📁')" data-i18n="subj_ane">Anexos</button>
+            <button class="subject-pill" onclick="abrirModal('ref', '📚')" data-i18n="subj_ref">Referencias</button>
+        </div>
+
+        <nav>
+            <div class="logo" data-i18n="logo">ECO Barrio</div>
+
+            <ul class="nav-links">
+                <li><a href="#inicio" data-i18n="nav_inicio">Inicio</a></li>
+                <li><a href="#proyecto" data-i18n="nav_proyecto">Proyecto</a></li>
+                <li><a href="#equipo" data-i18n="nav_equipo">Equipo</a></li>
+            </ul>
+
+            <button class="lang-btn" onclick="cambiarIdioma()">EN</button>
+        </nav>
+    </header>
+
+    <section id="inicio">
+        <h1 data-i18n="hero_titulo">Economía Verde</h1>
+        <h2 data-i18n="hero_subtitulo">Barrios Inteligentes: Cuidando el ambiente desde casa</h2>
+        <p data-i18n="hero_texto">Aprende a separar, reciclar y construir un futuro sostenible juntos.</p>
+        <a href="#proyecto" class="subject-pill" data-i18n="ver_detalles" style="padding:12px 30px; background:white; color:#0f3e22; text-decoration:none;">
+            Ver Detalles
+        </a>
+
+        <div class="hero-integrantes">
+            <strong>Integrantes:</strong>
+            Soto Tahis  #27<br>
+            Tagua Christian  #28<br>
+            Valdivia Veida  #29<br>
+            Vargas Nicolás  #30<br>
+            Vasco Domenica  #31<br>
+            Vinlasaca Josselyn  #32
+        </div>
+    </section>
+
+    <section id="proyecto" class="container">
+        <h2 class="section-title reveal" data-i18n="proyecto_titulo">El Proyecto</h2>
+        <div class="info-grid">
+            <div class="info-card reveal">
+                <h3 data-i18n="prob_titulo">Planteamiento del Problema</h3>
+                <p data-i18n="prob_texto">En la actualidad, en diversos barrios se evidencia un mal manejo de los residuos sólidos, situación que dificulta la aplicación efectiva de los principios de la economía verde. La falta de una cultura ambiental sólida y de información clara sobre la correcta clasificación y disposición de los desechos provoca que estos sean eliminados de manera incorrecta, afectando el entorno natural y la calidad de vida de la población.</p>
+                <br>
+                <h3 data-i18n="prod_titulo">El Producto Digital</h3>
+                <p data-i18n="prod_texto">Un sitio web minimalista y elegante que enseña a cuidar el ambiente. Tendrá instrucciones de reciclaje, horarios de recolección y mapas interactivos con puntos de entrega.</p>
+            </div>
+            <div class="info-card reveal" style="transition-delay: 0.2s;">
+                <h3 data-i18n="just_titulo">Justificación del Cambio</h3>
+                <p data-i18n="just_texto1">La acumulación de basura afecta nuestro bienestar. Este proyecto busca que entendamos cómo pequeñas acciones, como separar residuos y respetar horarios, mejoran radicalmente nuestra calidad de vida.</p>
+                <br>
+                <p data-i18n="just_texto2">La herramienta digital facilita la comunicación y promueve la participación activa de todos los vecinos para lograr un entorno más limpio, ordenado y próspero.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="objetivos" class="container">
+        <h2 class="section-title reveal" data-i18n="obj_titulo">Nuestros Objetivos</h2>
+        <div class="info-grid">
+            <div class="info-card reveal">
+                <h3 data-i18n="obj_gen_titulo">Objetivo General</h3>
+                <ul class="objetivos-list">
+                    <li data-i18n="obj_gen_texto">Crear una plataforma web accesible y moderna que ayude a los vecinos del barrio a organizarse eficientemente en la separación de basura y el cuidado de los espacios comunitarios.</li>
+                </ul>
+            </div>
+            <div class="info-card reveal" style="transition-delay: 0.2s;">
+                <h3 data-i18n="obj_esp_titulo">Objetivos Específicos</h3>
+                <ul class="objetivos-list">
+                    <li data-i18n="obj_esp_texto1">Explicar de forma sencilla e interactiva los pasos para separar los desechos y qué materiales se pueden reciclar.</li>
+                    <li data-i18n="obj_esp_texto2">Fomentar en la comunidad el compromiso con el cuidado del ambiente a través de la integración de conocimientos y acciones que impulsen cambios positivos en el hogar y en el entorno.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="juego-container" style="background-color: #f8fafc; padding: 60px 20px; text-align: center; font-family: 'Poppins', sans-serif;">
+    
+    <div style="max-width: 900px; margin: 0 auto;">
+        <h2 style="color: #0f766e; font-size: 2.5rem; margin-bottom: 10px;">🏃‍♂️ Eco-Runner</h2>
+        <p data-i18n="juego_desc" style="color: #0f766e; font-size: 1.1rem; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto;">
+            ¡Demuestra tus reflejos! Haz <em>plogging</em> por la ciudad: salta los obstáculos contaminantes y recoge todo el reciclaje que puedas.
+        </p>
+
+        <div style="position: relative; border-radius: 20px; padding: 0; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border: 4px solid #fff; overflow: hidden; margin: 0 auto; max-width: 800px; background-color: #000;">
+            
+            <div style="position: absolute; top: 15px; left: 20px; right: 20px; display: flex; justify-content: space-between; z-index: 10; font-size: 1.2rem; font-weight: bold; color: #0f766e; background: rgba(255,255,255,0.85); padding: 5px 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div><span data-i18n="juego_puntos">Puntos: </span><span id="eco-scoreText" style="color: #059669; font-size: 1.5rem;">0</span></div>
+                <div><span data-i18n="juego_record">Récord: </span><span id="eco-highScoreText">0</span></div>
+            </div>
+
+            <canvas id="ecoRunnerCanvas" width="800" height="300" style="display: block; width: 100%; height: auto; cursor: pointer; touch-action: none; background-size: cover; background-position: center; background-repeat: no-repeat; transition: background-image 1s ease-in-out;"></canvas>
+            
+            <div id="eco-pantalla-estado" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(15, 118, 110, 0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(4px); z-index: 20;">
+                <h2 id="eco-titulo-estado" data-i18n="juego_listo" style="font-size: 3rem; margin: 0 0 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">¿Listo para correr?</h2>
+                <p id="eco-mensaje-estado" data-i18n="juego_toca" style="font-size: 1.2rem; margin: 0 0 25px 0;">Toca el juego o presiona ESPACIO para saltar.</p>
+                <button id="eco-btn-iniciar" data-i18n="juego_jugar" style="background: #fbbf24; color: #78350f; border: none; padding: 12px 35px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: transform 0.2s;">
+                    ¡JUGAR!
+                </button>
+            </div>
+        </div>
+
+        <div data-i18n="juego_controles" style="background: white; padding: 15px; border-radius: 15px; margin-top: 20px; display: inline-block; border: 1px solid #e2e8f0; color: #475569;">
+            <strong>Controles:</strong> Clic en el juego o tecla <kbd style="background: #eee; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc;">ESPACIO</kbd> para saltar.
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const canvas = document.getElementById('ecoRunnerCanvas');
+        if (!canvas) return; 
+        
+        const ctx = canvas.getContext('2d');
+        const scoreText = document.getElementById('eco-scoreText');
+        const highScoreText = document.getElementById('eco-highScoreText');
+        const pantallaEstado = document.getElementById('eco-pantalla-estado');
+        const tituloEstado = document.getElementById('eco-titulo-estado');
+        const mensajeEstado = document.getElementById('eco-mensaje-estado');
+        const btnIniciar = document.getElementById('eco-btn-iniciar');
+
+        let isPlaying = false;
+        let score = 0;
+        let highScore = 0;
+        let gameSpeed = 5;
+        let frame = 0;
+        let animationId;
+
+        // --- LÓGICA DEL CARRUSEL DE FONDOS ---
+        const backgrounds = [
+            'url("img/fondo_quito_1.jpg")',
+            'url("img/fondo_quito_2.jpg")',
+            'url("img/fondo_quito_3.jpg")'
+        ];
+        let currentBgIndex = 0;
+        let bgInterval;
+
+        function changeBackground() {
+            currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+            canvas.style.backgroundImage = backgrounds[currentBgIndex];
+        }
+
+        // Configuración del Jugador
+        const player = {
+            x: 60,
+            y: 200,
+            width: 35,
+            height: 45,
+            dy: 0,
+            jumpForce: 12,
+            gravity: 0.6,
+            grounded: true,
+            sprite: '🌞' 
+        };
+
+        let obstacles = [];
+        let collectibles = [];
+        let particles = [];
+
+        const groundHeight = 40;
+        const groundY = canvas.height - groundHeight;
+
+        const obstacleTypes = ['🛢️', '☁️', '🗑️']; 
+        const collectibleTypes = ['♻️', '🍃']; 
+
+        // Controles
+        window.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                if (isPlaying) {
+                    e.preventDefault(); 
+                    jump();
+                } else if (pantallaEstado.style.display !== 'none') {
+                    e.preventDefault();
+                    startGame();
+                }
+            }
+        });
+
+        canvas.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            if (isPlaying) jump();
+        });
+
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            if (isPlaying) jump();
+        });
+
+        btnIniciar.addEventListener('click', startGame);
+
+        function jump() {
+            if (player.grounded) {
+                player.dy = -player.jumpForce;
+                player.grounded = false;
+                crearParticulas(player.x + 15, player.y + 40, '#94a3b8'); 
+            }
+        }
+
+        function startGame() {
+            pantallaEstado.style.display = 'none';
+            obstacles = [];
+            collectibles = [];
+            particles = [];
+            score = 0;
+            gameSpeed = 6;
+            player.y = groundY - player.height;
+            player.dy = 0;
+            player.grounded = true;
+            isPlaying = true;
+            scoreText.innerText = score;
+
+            // Iniciar carrusel de fondo (cambia cada 10 segundos)
+            canvas.style.backgroundImage = backgrounds[currentBgIndex];
+            clearInterval(bgInterval);
+            bgInterval = setInterval(changeBackground, 10000); 
+            
+            cancelAnimationFrame(animationId);
+            gameLoop();
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            clearInterval(bgInterval); // Detener carrusel
+            if (score > highScore) {
+                highScore = score;
+                highScoreText.innerText = highScore;
+            }
+            
+            pantallaEstado.style.display = 'flex';
+            
+            // --- NUEVA LÓGICA: Detecta el idioma activo para mostrar el mensaje correcto ---
+            // 'idiomaActual' viene de la variable global de abajo
+            if (typeof idiomaActual !== 'undefined') {
+                tituloEstado.innerText = idiomaActual === 'es' ? '¡Ups! Chocaste 💥' : 'Oops! You crashed 💥';
+                mensajeEstado.innerText = idiomaActual === 'es' ? 
+                    "Lograste reciclar " + score + " puntos de contaminación." : 
+                    "You managed to recycle " + score + " pollution points.";
+                btnIniciar.innerText = idiomaActual === 'es' ? 'Intentarlo de nuevo' : 'Try again';
+            } else {
+                // Respaldo por si acaso
+                tituloEstado.innerText = '¡Ups! Chocaste 💥';
+                mensajeEstado.innerText = "Lograste reciclar " + score + " puntos de contaminación.";
+                btnIniciar.innerText = 'Intentarlo de nuevo';
+            }
+        }
+
+        function spawnObstacle() {
+            let size = 40;
+            let type = obstacleTypes[Math.floor(Math.random() * obstacleTypes.length)];
+            let yPos = type === '☁️' ? groundY - size - 45 : groundY - size; 
+            
+            obstacles.push({
+                x: canvas.width,
+                y: yPos,
+                width: size,
+                height: size,
+                emoji: type
+            });
+        }
+
+        function spawnCollectible() {
+            let size = 30;
+            let type = collectibleTypes[Math.floor(Math.random() * collectibleTypes.length)];
+            let yPos = Math.random() > 0.5 ? groundY - size - 10 : groundY - size - 75;
+            
+            collectibles.push({
+                x: canvas.width,
+                y: yPos,
+                width: size,
+                height: size,
+                emoji: type,
+                collected: false
+            });
+        }
+
+        function crearParticulas(x, y, color) {
+            for (let i = 0; i < 5; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    life: 1, color: color
+                });
+            }
+        }
+
+        function checkCollision(rect1, rect2) {
+            const margin = 12;
+            return (
+                rect1.x + margin < rect2.x + rect2.width - margin &&
+                rect1.x + rect1.width - margin > rect2.x + margin &&
+                rect1.y + margin < rect2.y + rect2.height - margin &&
+                rect1.y + rect1.height - margin > rect2.y + margin
+            );
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+            frame++;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar Suelo
+            ctx.fillStyle = 'rgba(21, 128, 61, 0.8)';
+            ctx.fillRect(0, groundY, canvas.width, groundHeight);
+            ctx.fillStyle = 'rgba(120, 53, 15, 0.9)';
+            ctx.fillRect(0, groundY + 8, canvas.width, groundHeight - 8);
+
+            // Físicas del Jugador
+            player.dy += player.gravity;
+            player.y += player.dy;
+
+            if (player.y + player.height >= groundY) {
+                player.y = groundY - player.height;
+                player.dy = 0;
+                player.grounded = true;
+            }
+
+            // Dibujar Jugador
+            ctx.font = '45px Arial';
+            ctx.fillText(player.sprite, player.x, player.y + 40); 
+
+            // Dificultad
+            if (frame % 400 === 0) gameSpeed += 0.5;
+
+            // Generar elementos
+            if (frame % 100 === 0 && Math.random() > 0.3) spawnObstacle();
+            if (frame % 80 === 0 && Math.random() > 0.4) spawnCollectible();
+
+            // Mover y dibujar Obstáculos
+            for (let i = 0; i < obstacles.length; i++) {
+                let obs = obstacles[i];
+                obs.x -= gameSpeed;
+                ctx.font = '38px Arial';
+                ctx.fillText(obs.emoji, obs.x, obs.y + 35);
+
+                if (checkCollision(player, obs)) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            // Mover y dibujar Coleccionables
+            for (let i = 0; i < collectibles.length; i++) {
+                let col = collectibles[i];
+                if (!col.collected) {
+                    col.x -= gameSpeed;
+                    ctx.font = '30px Arial';
+                    ctx.fillText(col.emoji, col.x, col.y + 25);
+
+                    if (checkCollision(player, col)) {
+                        col.collected = true;
+                        score += 15;
+                        scoreText.innerText = score;
+                        crearParticulas(col.x + 15, col.y + 15, '#22c55e'); 
+                    }
+                }
+            }
+
+            obstacles = obstacles.filter(obs => obs.x + obs.width > -50);
+            collectibles = collectibles.filter(col => col.x + col.width > -50 && !col.collected);
+
+            // Partículas
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.05;
+                if (p.life > 0) {
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.life;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+            particles = particles.filter(p => p.life > 0);
+
+            if (frame % 10 === 0) {
+                score++;
+                scoreText.innerText = score;
+            }
+
+            animationId = requestAnimationFrame(gameLoop);
+        }
+    })();
+    </script>
+</section>
+
+    <section id="equipo" class="container">
+        <h2 class="section-title reveal" data-i18n="equipo_titulo">Nuestro Equipo</h2>
+        <div class="grid-integrantes">
+            <div class="card-integrante reveal">
+                <img src="img/Soto.png" alt="Soto" class="foto-carnet" onerror="this.src='https://ui-avatars.com/api/?name=Soto+Paucar&background=e8f5e9&color=2e7d32'">
+                <h4>Soto Paucar<br>Tahis Chenoa</h4>
+            </div>
+            <div class="card-integrante reveal" style="transition-delay: 0.1s;">
+                <img src="img/Tagua.png" alt="Tagua" class="foto-carnet" onerror="this.src='https://ui-avatars.com/api/?name=Tagua+Yungan&background=e8f5e9&color=2e7d32'">
+                <h4>Tagua Yungan<br>Christian Lenin</h4>
+            </div>
+            <div class="card-integrante reveal" style="transition-delay: 0.2s;">
+                <img src="img/Liss.png" alt="Liss" class="foto-carnet" onerror="this.src='https://ui-avatars.com/api/?name=Valdivia+Ventura&background=e8f5e9&color=2e7d32'">
+                <h4>Valdivia Ventura<br>Veida Lissette</h4>
+            </div>
+            <div class="card-integrante reveal" style="transition-delay: 0.3s;">
+                <img src="img/Vargas.png" alt="Vargas" class="foto-carnet" onerror="this.src='https://ui-avatars.com/api/?name=Vargas+Betancourt&background=e8f5e9&color=2e7d32'">
+                <h4>Vargas Betancourt<br>Nicolás Ariel</h4>
+            </div>
+            <div class="card-integrante reveal" style="transition-delay: 0.4s;">
+                <img src="img/Vasco.png" alt="Vasco" class="foto-carnet" onerror="this.src='https://ui-avatars.com/api/?name=Vasco+Guaman&background=e8f5e9&color=2e7d32'">
+                <h4>Vasco Guaman<br>Domenica Milena</h4>
+            </div>
+            <div class="card-integrante reveal" style="transition-delay: 0.5s;">
+                <img src="img/Vilansaca.png" alt="Vilansaca" class="foto-carnet" onerror="this.src='https://ui-avatars.com/api/?name=Vinlasaca+Guambo&background=e8f5e9&color=2e7d32'">
+                <h4>Vinlasaca Guambo<br>Josselyn Dayana</h4>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal()">&times;</span>
+            <div class="modal-icon" id="modalIcon">🌿</div>
+            <h3 id="modalTitle">Título</h3>
+            <p id="modalText">Contenido aquí...</p>
+            
+            <div id="modalCustomHtml" style="width: 100%; display: none;"></div>
+
+            <div class="media-container" id="mediaContainer">
+                <video id="modalVideo" controls playsinline></video>
+                <img id="modalImage" alt="Infografía de la Materia">
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p data-i18n="footer_texto1">&copy; 2026 Barrios Inteligentes. Proyecto Escolar - Unidad Educativa Municipal Fernández Madrid.</p>
+        <p style="margin-top: 10px; opacity: 0.7;" data-i18n="footer_texto2">Quito, Ecuador.</p>
+    </footer>
+
+    <script>
+        /* =======================
+           SISTEMA DE IDIOMA
+        ======================= */
+        let idiomaActual = "es";
+
+        const traducciones = {
+            es: {
+                logo: "ECO Barrio", nav_inicio: "Inicio", nav_proyecto: "Proyecto", nav_equipo: "Equipo",
+                hero_titulo: "Economía Verde", hero_subtitulo: "Barrios Inteligentes: Cuidando el ambiente desde casa",
+                hero_texto: " Aprende a separar, reciclar y construir un futuro sostenible juntos.",
+                ver_detalles: "Ver Detalles", proyecto_titulo: "El Proyecto", equipo_titulo: "Nuestro Equipo",
+                
+                /* Nombres de materias (Abreviados para no romper la barra) */
+                subj_bio: "Biología", 
+                subj_edu: "Educ. Física", 
+                subj_emp: "Emprendimiento", 
+                subj_fis: "Física",
+                subj_lit: "Lengua y Lit.", 
+                subj_mat: "Matemáticas, Números Complejos y Métodos de Demostración Matemática", 
+                subj_qui: "Química",
+                subj_ane: "Anexos", 
+                subj_ref: "Referencias",
+                
+                prob_titulo: "Planteamiento del Problema",
+                prob_texto: "En la actualidad, en diversos barrios se evidencia un mal manejo de los residuos sólidos...",
+                prod_titulo: "El Producto Digital", prod_texto: "Un sitio web minimalista y elegante que enseña a cuidar el ambiente...",
+                just_titulo: "Justificación del Cambio", just_texto1: "La acumulación de basura afecta nuestro bienestar...",
+                just_texto2: "La herramienta digital facilita la comunicación y promueve la participación activa...",
+                obj_titulo: "Nuestros Objetivos", obj_gen_titulo: "Objetivo General",
+                obj_gen_texto: "Crear una plataforma web accesible y moderna que ayude a los vecinos...",
+                obj_esp_titulo: "Objetivos Específicos", obj_esp_texto1: "Explicar de forma sencilla e interactiva...",
+                obj_esp_texto2: "Fomentar en la comunidad el compromiso con el cuidado del ambiente...",
+                footer_texto1: "© 2026 Barrios Inteligentes. Proyecto Escolar - Unidad Educativa Municipal Fernández Madrid.", footer_texto2: "Quito, Ecuador.",
+                
+                /* --- TEXTOS DEL JUEGO --- */
+                juego_desc: "¡Demuestra tus reflejos! Haz <em>plogging</em> por la ciudad: salta los obstáculos contaminantes y recoge todo el reciclaje que puedas.",
+                juego_puntos: "Puntos: ",
+                juego_record: "Récord: ",
+                juego_listo: "¿Listo para correr?",
+                juego_toca: "Toca el juego o presiona ESPACIO para saltar.",
+                juego_jugar: "¡JUGAR!",
+                juego_controles: "<strong>Controles:</strong> Clic en el juego o tecla <kbd style='background: #eee; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc;'>ESPACIO</kbd> para saltar."
+            },
+            en: {
+                logo: "ECO Neighborhood", nav_inicio: "Home", nav_proyecto: "Project", nav_equipo: "Team",
+                hero_titulo: "Green Economy", hero_subtitulo: "Smart Neighborhoods: Caring for the environment from home",
+                hero_texto: " Learn to separate, recycle and build a sustainable future together.",
+                ver_detalles: "View Details", proyecto_titulo: "The Project", equipo_titulo: "Our Team",
+                
+                /* Nombres de materias (Abreviados en inglés) */
+                subj_bio: "Biology", 
+                subj_edu: "Physical Ed.", 
+                subj_emp: "Entrepreneurship", 
+                subj_fis: "Physics",
+                subj_lit: "Language & Lit.", 
+                subj_mat: "Mathematics, Complex Numbers and Methods of Mathematical Proof", 
+                subj_qui: "Chemistry",
+                subj_ane: "Annexes", 
+                subj_ref: "References",
+                
+                prob_titulo: "Problem Statement", prob_texto: "Currently, various neighborhoods show poor solid waste management...",
+                prod_titulo: "The Digital Product", prod_texto: "A minimalist and elegant website that teaches how to care for the environment...",
+                just_titulo: "Justification for Change", just_texto1: "Waste accumulation affects our well-being...",
+                just_texto2: "The digital tool facilitates communication and promotes active participation...",
+                obj_titulo: "Our Objectives", obj_gen_titulo: "General Objective",
+                obj_gen_texto: "Create an accessible and modern web platform...",
+                obj_esp_titulo: "Specific Objectives", obj_esp_texto1: "Explain simply and interactively...",
+                obj_esp_texto2: "Foster community commitment to environmental care...",
+                footer_texto1: "© 2026 Smart Neighborhoods. School Project.", footer_texto2: "Quito, Ecuador.",
+                
+                /* --- TEXTOS DEL JUEGO --- */
+                juego_desc: "Show off your reflexes! Do <em>plogging</em> around the city: jump over polluting obstacles and collect all the recycling you can.",
+                juego_puntos: "Score: ",
+                juego_record: "Record: ",
+                juego_listo: "Ready to run?",
+                juego_toca: "Tap the game or press SPACE to jump.",
+                juego_jugar: "PLAY!",
+                juego_controles: "<strong>Controls:</strong> Click the game or press <kbd style='background: #eee; padding: 2px 6px; border-radius: 4px; border: 1px solid #ccc;'>SPACE</kbd> to jump."
+            }
+        };
+
+        function cambiarIdioma() {
+            idiomaActual = idiomaActual === "es" ? "en" : "es";
+            
+            document.querySelectorAll("[data-i18n]").forEach(elemento => {
+                const clave = elemento.getAttribute("data-i18n");
+                if (traducciones[idiomaActual][clave]) {
+                    elemento.innerHTML = traducciones[idiomaActual][clave]; // Usamos innerHTML para no borrar el recuadro de "ESPACIO"
+                }
+            });
+            
+            document.querySelector(".lang-btn").textContent = idiomaActual === "es" ? "EN" : "ES";
+            if (modal.classList.contains('show') && modalClaveActual) { abrirModal(modalClaveActual, modalEmojiActual); }
+
+            // --- TRADUCIR LA PANTALLA DE "CHOCASTE" EN TIEMPO REAL ---
+            const pantallaEstado = document.getElementById('eco-pantalla-estado');
+            if (pantallaEstado && pantallaEstado.style.display !== 'none') {
+                const scoreText = document.getElementById('eco-scoreText');
+                const score = scoreText ? scoreText.innerText : "0";
+                const tituloEstado = document.getElementById('eco-titulo-estado');
+                
+                if (tituloEstado && (tituloEstado.innerText.includes('Choca') || tituloEstado.innerText.includes('crash'))) {
+                    tituloEstado.innerText = idiomaActual === 'es' ? '¡Ups! Chocaste 💥' : 'Oops! You crashed 💥';
+                    document.getElementById('eco-mensaje-estado').innerText = idiomaActual === 'es' ? 
+                        "Lograste reciclar " + score + " puntos de contaminación." : 
+                        "You managed to recycle " + score + " pollution points.";
+                    document.getElementById('eco-btn-iniciar').innerText = idiomaActual === 'es' ? 'Intentarlo de nuevo' : 'Try again';
+                }
+            }
+        }
+
+        // SCROLL REVEAL
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) { reveals[i].classList.add("active"); }
+            }
+        }
+        window.addEventListener("scroll", reveal); reveal();
+
+        /* =======================
+           TEXTOS DE REFERENCIAS Y ANEXOS
+        ======================= */
+        const contenidosReferencias = {
+            es: {
+                bio: "<strong>🧬 Biología:</strong><br>• Libro de Ciencias Naturales, pág. 45.<br>• Artículo: 'Vectores y salud pública'.",
+                edu: "<strong>🏃 Educación Física:</strong><br>• Guía de Plogging de la OMS.<br>• Beneficios de la actividad al aire libre.",
+                emp: "<strong>💡 Emprendimiento:</strong><br>• Manual de Economía Circular.<br>• Casos de reciclaje rentable en Quito.",
+                fis: "<strong>⚡ Física:</strong><br>• Fórmulas de densidad volumétrica.<br>• Estudio de optimización de espacios.",
+                lit: "<strong>✍️ Lengua y Literatura:</strong><br>• Técnicas de redacción persuasiva.<br>• Análisis de campañas ambientales locales.",
+                mat: "<strong>➗ Matemáticas:</strong><br>• Estadística descriptiva aplicada.<br>• Simulación matemática de rutas óptimas.",
+                qui: "<strong>🧪 Química:</strong><br>• Tabla oficial de degradación de polímeros.<br>• Análisis químico de lixiviados en Ecuador."
+            },
+            en: {
+                bio: "<strong>🧬 Biology:</strong><br>• Natural Sciences Book, pg. 45.<br>• Article: 'Vectors and public health'.",
+                edu: "<strong>🏃 Physical Education:</strong><br>• WHO Plogging Guide.<br>• Benefits of outdoor activity.",
+                emp: "<strong>💡 Entrepreneurship:</strong><br>• Circular Economy Manual.<br>• Profitable recycling cases in Quito.",
+                fis: "<strong>⚡ Physics:</strong><br>• Volumetric density formulas.<br>• Space optimization study.",
+                lit: "<strong>✍️ Language & Lit:</strong><br>• Persuasive writing techniques.<br>• Local environmental campaign analysis.",
+                mat: "<strong>➗ Mathematics:</strong><br>• Applied descriptive statistics.<br>• Mathematical simulation of optimal routes.",
+                qui: "<strong>🧪 Chemistry:</strong><br>• Official polymer degradation table.<br>• Chemical analysis of leachates in Ecuador."
+            }
+        };
+
+        const contenidosAnexos = {
+            es: {
+                soto: "<strong>📄 Autorización de Tahis Soto:</strong><br>• Documento de consentimiento firmado.<br>• Permiso de uso de imagen y datos para el proyecto escolar.<br><img src='img/ANE SOTO.jpeg' alt='Autorización Soto' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                tagua: "<strong>📄 Autorización de Christian Tagua:</strong><br>• Documento de consentimiento firmado.<br>• Permiso de uso de imagen y datos para el proyecto escolar.<br><img src='img/ANE TAGUA.jpeg' alt='Autorización Tagua' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                valdivia: "<strong>📄 Autorización de Veida Valdivia:</strong><br>• Documento de consentimiento firmado.<br>• Permiso de uso de imagen y datos para el proyecto escolar.<br><img src='img/ANE VALDIVIA VEIDA.jpeg' alt='Autorización Valdivia' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                vargas: "<strong>📄 Autorización de Nicolás Vargas:</strong><br>• Documento de consentimiento firmado.<br>• Permiso de uso de imagen y datos para el proyecto escolar.<br><img src='img/ANE VARGAS.jpeg' alt='Autorización Vargas' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                vasco: "<strong>📄 Autorización de Domenica Vasco:</strong><br>• Documento de consentimiento firmado.<br>• Permiso de uso de imagen y datos para el proyecto escolar.<br><img src='img/ANE VASCO.jpeg' alt='Autorización Vasco' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                vinlasaca: "<strong>📄 Autorización de Josselyn Vinlasaca:</strong><br>• Documento de consentimiento firmado.<br>• Permiso de uso de imagen y datos para el proyecto escolar.<br><img src='img/ANE Vinlasaca.jpeg' alt='Autorización Vinlasaca' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>"
+            },
+            en: {
+                soto: "<strong>📄 Authorization of Tahis Soto:</strong><br>• Signed consent document.<br>• Image and data use permission for the school project.<br><img src='img/ANE SOTO.jpeg' alt='Authorization Soto' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                tagua: "<strong>📄 Authorization of Christian Tagua:</strong><br>• Signed consent document.<br>• Image and data use permission for the school project.<br><img src='img/ANE TAGUA.jpeg' alt='Authorization Tagua' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                valdivia: "<strong>📄 Authorization of Veida Valdivia:</strong><br>• Signed consent document.<br>• Image and data use permission for the school project.<br><img src='img/ANE VALDIVIA VEIDA.jpeg' alt='Authorization Valdivia' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                vargas: "<strong>📄 Authorization of Nicolás Vargas:</strong><br>• Signed consent document.<br>• Image and data use permission for the school project.<br><img src='img/ANE VARGAS.jpeg' alt='Authorization Vargas' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                vasco: "<strong>📄 Authorization of Domenica Vasco:</strong><br>• Signed consent document.<br>• Image and data use permission for the school project.<br><img src='img/ANE VASCO.jpeg' alt='Authorization Vasco' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>",
+                vinlasaca: "<strong>📄 Authorization of Josselyn Vinlasaca:</strong><br>• Signed consent document.<br>• Image and data use permission for the school project.<br><img src='img/ANE Vinlasaca.jpeg' alt='Authorization Vinlasaca' style='width: 100%; max-width: 450px; border-radius: 10px; display: block; margin: 15px auto 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1);'>"
+            }
+        };
+
+        function mostrarReferencia(materiaId, elementoBoton) {
+            document.querySelectorAll('.ref-btn:not(.ane-btn)').forEach(btn => btn.classList.remove('active'));
+            if(elementoBoton) elementoBoton.classList.add('active');
+            const banner = document.getElementById('refBannerDisplay');
+            banner.innerHTML = contenidosReferencias[idiomaActual][materiaId];
+            banner.style.display = 'block';
+        }
+
+        function mostrarAnexo(materiaId, elementoBoton) {
+            document.querySelectorAll('.ane-btn').forEach(btn => btn.classList.remove('active'));
+            if(elementoBoton) elementoBoton.classList.add('active');
+            const banner = document.getElementById('aneBannerDisplay');
+            banner.innerHTML = contenidosAnexos[idiomaActual][materiaId];
+            banner.style.display = 'block';
+        }
+
+        /* =======================
+           DATOS DE LAS MATERIAS
+        ======================= */
+        const asignaturasData = {
+           'bio': { 
+                tipo: 'html', 
+                fondo: "url('https://images.pexels.com/photos/10935131/pexels-photo-10935131.jpeg')",
+                es: { 
+                    titulo: 'Biología', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">El mensaje de la tortuga verde al mundo</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">En la actualidad, el mal manejo de residuos sólidos, especialmente plásticos de un solo uso, ha provocado que muchos desechos lleguen a ríos y océanos del Ecuador, afectando a especies marinas como la tortuga verde (Chelonia mydas), que puede ingerir bolsas de plástico o quedar atrapada en basura. Esta presentación brinda información sobre esta especie y su conservación.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 8px; overflow: hidden;">
+                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/fq6kigAHUMs" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Fuente:</strong> Valdivia, L. (2026).</p>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Biology', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">The green sea turtle's message to the world</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">Currently, the mismanagement of solid waste, especially single-use plastics, has caused many wastes to reach rivers and oceans in Ecuador, affecting marine species such as the green sea turtle (Chelonia mydas), which may ingest plastic bags or become trapped in debris. This presentation provides information about this species and its conservation.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 8px; overflow: hidden;">
+                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/fq6kigAHUMs" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Source:</strong> Valdivia, L. (2026).</p>
+                        </div>
+                    `
+                }
+            },
+            'edu': { 
+                tipo: 'html', 
+                fondo: " url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1920&auto=format&fit=crop')",
+                es: { 
+                    titulo: 'Educación Física', 
+                    texto: 'Práctica de plogging y patinaje para fortalecer la condición física mientras se contribuye a la limpieza y estética de los espacios públicos del barrio.',
+                    html: `
+                        <div style="margin-top: 20px; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
+                            <iframe width="100%" height="400" src="https://www.youtube.com/embed/0ZzEsva4Q3k" title="Video de Educación Física" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Physical Education', 
+                    texto: 'Plogging and skating practice to strengthen physical fitness while contributing to the cleanliness and aesthetics of the neighborhoods public spaces.',
+                    html: `
+                        <div style="margin-top: 20px; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
+                            <iframe width="100%" height="400" src="https://www.youtube.com/embed/0ZzEsva4Q3k" title="Physical Education Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    `
+                }
+            },
+            'emp': { 
+                tipo: 'html', 
+                fondo: " url('https://www.ucuenca.edu.ec/wp-content/uploads/2024/04/pexels-fauxels-3183150-scaled.jpg')", 
+                es: { 
+                    titulo: 'Emprendimiento', 
+                    texto: '', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 2.0; /* Interlineado doble para APA */">
+                            
+                            <p style="margin: 0; font-weight: bold;">Figura 1</p>
+                            <p style="margin: 0 0 20px 0; font-style: italic;">Optimización de costos fijos y variables de economía verde</p>
+
+                            <img src="img/Emprendimiento.png" alt="Infografía de Emprendimiento" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 10px auto; border: 1px solid #eee;">
+
+                            <p style="margin: 0 0 5px 0; font-size: 11pt; text-align: justify;">Fuente: Soto, T. (2026). Elaboración propia.</p>
+                            <p style="margin: 0; font-size: 11pt; text-align: justify;"><em>Nota:</em> La figura presenta la diferencia entre costos fijos y variables, sus características, ejemplos e importancia dentro de un proyecto de economía verde, destacando estrategias para optimizar recursos.</p>
+                            
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Entrepreneurship', 
+                    texto: '',
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 2.0; /* Interlineado doble para APA */">
+                            
+                            <p style="margin: 0; font-weight: bold;">Figure 1</p>
+                            <p style="margin: 0 0 20px 0; font-style: italic;">Optimization of fixed and variable costs in the green economy</p>
+
+                            <img src="img/emprendimiento_en.jpg" alt="Entrepreneurship Infographic" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 10px auto; border: 1px solid #eee;">
+
+                            <p style="margin: 0 0 5px 0; font-size: 11pt; text-align: justify;">Source: Soto, T. (2026). Own elaboration.</p>
+                            <p style="margin: 0; font-size: 11pt; text-align: justify;"><em>Note:</em> The figure presents the difference between fixed and variable costs, their characteristics, examples, and importance within a green economy project, highlighting strategies to optimize resources.</p>
+                            
+                        </div>
+                    `
+                }
+            },
+
+           'fis': {
+
+                tipo: 'html',
+
+                fondo: " url('https://static.vecteezy.com/system/resources/previews/074/097/129/non_2x/circular-star-trails-illuminating-the-dark-night-sky-in-a-mesmerizing-long-exposure-astrophotography-of-the-cosmos-free-photo.jpg')",
+
+                es: {
+
+                    titulo: 'Física',
+
+                    texto: '',
+
+                    html: `
+
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 2.0; /* Interlineado doble para APA */">
+
+                           
+
+                            <p style="margin: 0; font-weight: bold;">Figura 1</p>
+
+                            <p style="margin: 0 0 20px 0; font-style: italic;">Fuerza eléctrica y consumo eficiente</p>
+
+
+
+                            <img src="img/FISICA .png" alt="Infografía de Física" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 10px auto; border: 1px solid #eee;">
+
+
+
+                            <p style="margin: 0 0 5px 0; font-size: 11pt; text-align: justify;">Fuente: Valdivia, L. (2026). Elaboración propia.</p>
+
+                            <p style="margin: 0; font-size: 11pt; text-align: justify;"><em>Nota:</em> La figura explica cómo la fuerza eléctrica permite el funcionamiento de los aparatos eléctricos y destaca la importancia del consumo eficiente para reducir el gasto energético y el impacto ambiental.</p>
+
+                           
+
+                        </div>
+
+                    `
+
+                },
+
+                en: {
+
+                    titulo: 'Physics',
+
+                    texto: '',
+
+                    html: `
+
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 2.0; /* Interlineado doble para APA */">
+
+                           
+
+                            <p style="margin: 0; font-weight: bold;">Figure 1</p>
+
+                            <p style="margin: 0 0 20px 0; font-style: italic;">Electric force and efficient consumption</p>
+
+
+
+                            <img src="img/FISICA .translated.jpg" alt="Physics Infographic" style="width: 100%; max-width: 100%; height: auto; display: block; margin: 0 auto 10px auto; border: 1px solid #eee;">
+
+
+
+                            <p style="margin: 0 0 5px 0; font-size: 11pt; text-align: justify;">Source: Valdivia, L. (2026). Own elaboration.</p>
+
+                            <p style="margin: 0; font-size: 11pt; text-align: justify;"><em>Note:</em> The figure explains how electric force allows the operation of electrical appliances and highlights the importance of efficient consumption to reduce energy expenditure and environmental impact.</p>
+
+                           
+
+                        </div>
+
+                    `
+
+                }
+
+            },
+
+
+           'lit': { 
+                tipo: 'html', 
+                fondo: "url('https://images.pexels.com/photos/414061/pexels-photo-414061.jpeg')", 
+                es: { 
+                    titulo: 'Lengua y Literatura', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">Entrevista sobre Gestión de Residuos y Responsabilidad Ambiental</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">Les invitamos a ver esta entrevista, en la que se realizaron diversas preguntas relacionadas con el reciclaje, las mingas comunitarias y el cuidado del ambiente, como parte de nuestra propuesta para fortalecer una comunidad más organizada y sostenible.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 8px; overflow: hidden;">
+                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/bmMmeLkMedU" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Fuente:</strong> Grupo 6. (2026).</p>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Language and Literature', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">Interview on Waste Management and Environmental Responsibility</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">We invite you to watch this interview, where various questions were asked regarding recycling, community work (mingas), and environmental care, as part of our proposal to strengthen a more organized and sustainable community.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 8px; overflow: hidden;">
+                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/bmMmeLkMedU" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Source:</strong> Group 6. (2026).</p>
+                        </div>
+                    `
+                }
+            },
+            'edu': { 
+                tipo: 'html', 
+                fondo: "url('https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1920&auto=format&fit=crop')",
+                es: { 
+                    titulo: 'Educación Física', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">Compromiso ecológico y vida activa</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">Les invitamos a ver nuestro video donde mostramos cómo combinamos ejercicios corporales con el reciclaje, el uso de botellas reutilizables, bicicletas, patines y plogging, promoviendo una vida saludable y el cuidado del ambiente.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 8px; overflow: hidden;">
+                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/0ZzEsva4Q3k" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Fuente:</strong> Grupo 6. (2026).</p>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Physical Education', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">Ecological commitment and active lifestyle</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">We invite you to watch our video where we demonstrate how we combine physical exercises with recycling, the use of reusable bottles, bicycles, skates, and plogging, promoting a healthy lifestyle and environmental care.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 8px; overflow: hidden;">
+                                <iframe width="100%" height="400" src="https://www.youtube.com/embed/0ZzEsva4Q3k" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Source:</strong> Group 6. (2026).</p>
+                        </div>
+                    `
+                }
+            },
+            'qui': { 
+                tipo: 'html', 
+                fondo: "url('https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=1920&auto=format&fit=crop')",
+                es: { 
+                    titulo: 'Química', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">Calidad del aire en mi entorno</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">Te invitamos a conocer la siguiente presentación sobre la calidad del aire en nuestro entorno, su impacto en nuestra vida diaria y las acciones que podemos implementar para construir comunidades más responsables y sostenibles.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; max-width: 350px;">
+                                <iframe width="100%" height="600" src="https://www.youtube.com/embed/AapDgeB6LDE" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Fuente:</strong> Vinlasaca, J. (2026).</p>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Chemistry', 
+                    html: `
+                        <div style="background: #ffffff; padding: 35px 45px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 800px; margin: 10px auto 0; text-align: left; font-family: 'Times New Roman', Times, serif; font-size: 12pt; color: #000; line-height: 1.6;">
+                            <h3 style="margin: 0 0 15px 0; font-weight: bold; font-size: 16pt; color: #166534; text-align: center;">Air quality in my environment</h3>
+                            <p style="margin: 0 0 20px 0; font-size: 11pt; text-align: justify;">We invite you to explore the following presentation on air quality in our environment, its impact on our daily life, and the actions we can implement to build more responsible and sustainable communities.</p>
+                            <div style="margin: 0 auto 15px auto; border-radius: 12px; overflow: hidden; max-width: 350px;">
+                                <iframe width="100%" height="600" src="https://www.youtube.com/embed/AapDgeB6LDE" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <p style="margin: 0; font-size: 11pt; color: #4a5c51;"><strong>Source:</strong> Vinlasaca, J. (2026).</p>
+                        </div>
+                    `
+                }
+            },
+            'mat': { 
+                tipo: 'html',
+                fondo: "url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1920&auto=format&fit=crop')",
+                es: { 
+                    titulo: 'Matemáticas, Números Complejos y Métodos de Demostración Matemática', 
+                    texto: 'Análisis de datos de 63 personas encuestadas:',
+                    html: `
+                        <style>
+                            .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; width: 100%; }
+                            .kpi-card { background: #f4f9f6; border-radius: 16px; padding: 20px 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid rgba(36, 117, 67, 0.1); transition: transform 0.3s ease; display: flex; flex-direction: column; justify-content: center; }
+                            .kpi-card:hover { transform: translateY(-5px); border-color: var(--green-light); }
+                            .kpi-num { font-size: 2rem; font-weight: 700; color: var(--green-main); line-height: 1.1; margin-bottom: 5px; }
+                            .kpi-title { font-size: 0.75rem; font-weight: 600; color: #5c7566; text-transform: uppercase; letter-spacing: 0.5px; }
+                            .kpi-sub { font-size: 0.85rem; color: #4a5c51; margin-top: 8px; font-weight: 500; background: #e2ede6; padding: 4px 8px; border-radius: 8px; display: inline-block; align-self: center; }
+                            
+                            .charts-row-1 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 15px; margin-bottom: 15px; width: 100%; }
+                            .charts-row-2 { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; margin-bottom: 20px; }
+                            .chart-box { background: #ffffff; border-radius: 16px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; position: relative; height: 260px; }
+                            
+                            .btn-container { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+                            .btn-action { width: 260px; margin: 0 !important; text-decoration: none; font-size: 1rem; box-shadow: 0 6px 15px rgba(36, 117, 67, 0.3); text-align: center; display: flex; align-items: center; justify-content: center; padding: 10px 0; }
+                            
+                            @media (max-width: 768px) { 
+                                .charts-row-1 { grid-template-columns: 1fr; } 
+                                .chart-box { height: 220px; } 
+                                .btn-container { flex-direction: column; align-items: center; gap: 15px; } 
+                            }
+                        </style>
+                        <div style="width: 100%; max-width: 850px; margin: 0 auto;">
+                            
+                            <div class="btn-container">
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeULtWPJuljYMFRx5FLHe6uOhCNZAvMKjABrgsEDEtg42jvaA/viewform" target="_blank" class="ref-btn btn-action">
+                                    📊 Conoce nuestra encuesta
+                                </a>
+                                <a href="img/preguntas_encuesta.pdf" target="_blank" class="ref-btn btn-action">
+                                    📄 Ver preguntas (PDF)
+                                </a>
+                            </div>
+
+                            <div class="dash-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-num">63</div>
+                                    <div class="kpi-title">Total de respuestas</div>
+                                    <div class="kpi-sub">👩 33 (52%) | 👨 30 (48%)</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-num">58.7%</div>
+                                    <div class="kpi-title">Apoyan Mingas Comunitarias</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-num">TikTok</div>
+                                    <div class="kpi-title">Medio de Difusión Preferido</div>
+                                </div>
+                            </div>
+                            
+                            <div class="charts-row-1">
+                                <div class="chart-box"><canvas id="chartClasificacion"></canvas></div>
+                                <div class="chart-box"><canvas id="chartMingas"></canvas></div>
+                            </div>
+                            <div class="charts-row-2">
+                                <div class="chart-box" style="height: 220px;"><canvas id="chartImpacto"></canvas></div>
+                            </div>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'Mathematics, Complex Numbers and Methods of Mathematical Proof', 
+                    texto: 'Data analysis of 63 people surveyed:',
+                    html: `
+                        <style>
+                            .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; width: 100%; }
+                            .kpi-card { background: #f4f9f6; border-radius: 16px; padding: 20px 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid rgba(36, 117, 67, 0.1); transition: transform 0.3s ease; display: flex; flex-direction: column; justify-content: center; }
+                            .kpi-card:hover { transform: translateY(-5px); border-color: var(--green-light); }
+                            .kpi-num { font-size: 2rem; font-weight: 700; color: var(--green-main); line-height: 1.1; margin-bottom: 5px; }
+                            .kpi-title { font-size: 0.75rem; font-weight: 600; color: #5c7566; text-transform: uppercase; letter-spacing: 0.5px; }
+                            .kpi-sub { font-size: 0.85rem; color: #4a5c51; margin-top: 8px; font-weight: 500; background: #e2ede6; padding: 4px 8px; border-radius: 8px; display: inline-block; align-self: center; }
+                            
+                            .charts-row-1 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 15px; margin-bottom: 15px; width: 100%; }
+                            .charts-row-2 { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; margin-bottom: 20px; }
+                            .chart-box { background: #ffffff; border-radius: 16px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: center; position: relative; height: 260px; }
+                            
+                            .btn-container { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+                            .btn-action { width: 260px; margin: 0 !important; text-decoration: none; font-size: 1rem; box-shadow: 0 6px 15px rgba(36, 117, 67, 0.3); text-align: center; display: flex; align-items: center; justify-content: center; padding: 10px 0; }
+                            
+                            @media (max-width: 768px) { 
+                                .charts-row-1 { grid-template-columns: 1fr; } 
+                                .chart-box { height: 220px; } 
+                                .btn-container { flex-direction: column; align-items: center; gap: 15px; } 
+                            }
+                        </style>
+                        <div style="width: 100%; max-width: 850px; margin: 0 auto;">
+                            
+                            <div class="btn-container">
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeULtWPJuljYMFRx5FLHe6uOhCNZAvMKjABrgsEDEtg42jvaA/viewform" target="_blank" class="ref-btn btn-action">
+                                    📊 Discover our survey
+                                </a>
+                                <a href="documentos/preguntas_encuesta.pdf" target="_blank" class="ref-btn btn-action">
+                                    📄 View questions (PDF)
+                                </a>
+                            </div>
+
+                            <div class="dash-grid">
+                                <div class="kpi-card">
+                                    <div class="kpi-num">63</div>
+                                    <div class="kpi-title">Total responses</div>
+                                    <div class="kpi-sub">👩 33 (52%) | 👨 30 (48%)</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-num">58.7%</div>
+                                    <div class="kpi-title">Support Community Work</div>
+                                </div>
+                                <div class="kpi-card">
+                                    <div class="kpi-num">TikTok</div>
+                                    <div class="kpi-title">Preferred Media</div>
+                                </div>
+                            </div>
+                            
+                            <div class="charts-row-1">
+                                <div class="chart-box"><canvas id="chartClasificacion"></canvas></div>
+                                <div class="chart-box"><canvas id="chartMingas"></canvas></div>
+                            </div>
+                            <div class="charts-row-2">
+                                <div class="chart-box" style="height: 220px;"><canvas id="chartImpacto"></canvas></div>
+                            </div>
+                        </div>
+                    `
+                }
+            },
+            'ane': {
+                tipo: 'html', 
+                fondo: " url('https://images.pexels.com/photos/4360449/pexels-photo-4360449.jpeg')",
+                es: { 
+                    titulo: 'Autorizaciones del Proyecto', 
+                    texto: 'Selecciona un estudiante para ver su autorización de participación:',
+                    html: `
+                        <div class="ref-buttons-container">
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('soto', this)">👤 Soto Tahis</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('tagua', this)">👤 Tagua Christian</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('valdivia', this)">👤 Valdivia Veida</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('vargas', this)">👤 Vargas Nicolás</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('vasco', this)">👤 Vasco Domenica</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('vinlasaca', this)">👤 Vinlasaca Josselyn</button>
+                        </div>
+                        <div id="aneBannerDisplay" class="ref-content-box"></div>
+                    `
+                },
+                en: { 
+                    titulo: 'Project Authorizations', 
+                    texto: 'Select a student to view their participation authorization:', 
+                    html: `
+                        <div class="ref-buttons-container">
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('soto', this)">👤 Soto Tahis</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('tagua', this)">👤 Tagua Christian</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('valdivia', this)">👤 Valdivia Veida</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('vargas', this)">👤 Vargas Nicolás</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('vasco', this)">👤 Vasco Domenica</button>
+                            <button class="ref-btn ane-btn" onclick="mostrarAnexo('vinlasaca', this)">👤 Vinlasaca Josselyn</button>
+                        </div>
+                        <div id="aneBannerDisplay" class="ref-content-box"></div>
+                    ` 
+                }
+            },
+            'ref': {
+                tipo: 'html', 
+                fondo: " url('https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg')", 
+                es: { 
+                    titulo: 'Referencias Bibliográficas', 
+                    texto: 'Listado de fuentes consultadas en formato APA (7ma edición):',
+                    html: `
+                        <div style="background: #ffffff; padding: 40px 50px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 850px; margin: 0 auto; text-align: left; overflow-x: hidden;">
+                            <div style="font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 2; color: #000;">
+                                <h4 style="text-align: center; font-weight: bold; margin-bottom: 30px; font-size: 12pt;">Referencias</h4>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Banco Mundial. (2022). <em>El cambio climático y la contaminación atmosférica</em>. <a href="https://share.google/NbCvgo6ld5GGXv53b" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/NbCvgo6ld5GGXv53b</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    BBVA. (2023). <em>¿Qué es la eficiencia energética y cómo se calcula?</em> <a href="https://www.bbva.com/es/sostenibilidad/que-es-la-eficiencia-energetica-y-como-secalcula/" target="_blank" style="color: #0563c1; text-decoration: underline;">https://www.bbva.com/es/sostenibilidad/que-es-la-eficiencia-energetica-y-como-secalcula/</a>
+                                </p>
+
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Credlix. (2024). <em>Explicación de los costos fijos y variables: controle el presupuesto de su empresa</em>. <a href="https://www.credlix.com/es-mx/blogs/explicacion-de-los-costos-fijos-y-variables-controle-el-presupuesto-de-su-empresa" target="_blank" style="color: #0563c1; text-decoration: underline;">https://www.credlix.com/es-mx/blogs/explicacion-de-los-costos-fijos-y-variables-controle-el-presupuesto-de-su-empresa</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Descubriendo Galápagos. (s.f.). <em>Tortuga marina verde</em>. <a href="https://descubriendogalapagos.ec/dg_species/tortuga-marina-verde/" target="_blank" style="color: #0563c1; text-decoration: underline;">https://descubriendogalapagos.ec/dg_species/tortuga-marina-verde/</a>
+                                </p>
+
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Fernández-Zamudio, F. (2016). <em>Importancia de los costes fijos y de oportunidad</em> (p. 10). [Libro sobre la optimización de costos fijos y variables en la economía verde]. <a href="https://redivia.gva.es/bitstream/handle/20.500.11939/7033/2016_Fern%c3%a1ndez-Zamudio_Importancia.pdf?sequence=1&isAllowed=y" target="_blank" style="color: #0563c1; text-decoration: underline;">https://redivia.gva.es/bitstream/handle/20.500.11939/7033/2016_Fern%c3%a1ndez-Zamudio_Importancia.pdf?sequence=1&isAllowed=y</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Fundación CRAM. (s.f.). <em>Tortuga verde (Chelonia mydas)</em>. <a href="https://share.google/oWYhdAzy6xfbAiHN9" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/oWYhdAzy6xfbAiHN9</a>
+                                </p>
+
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    IPADE. (2024). <em>Costos fijos y variables: estrategias para optimizarlos</em>. <a href="https://www.ipade.mx/newsmedia/economia-es/costos-fijos-y-variables-estrategias-para-optimizarlos/" target="_blank" style="color: #0563c1; text-decoration: underline;">https://www.ipade.mx/newsmedia/economia-es/costos-fijos-y-variables-estrategias-para-optimizarlos/</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    MarAlliance. (s.f.). <em>Esperanza para los océanos: la tortuga verde ya no está en peligro de extinción</em>. <a href="https://share.google/SJXAZPqAJiww3KyR3" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/SJXAZPqAJiww3KyR3</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Museo Virtual del CSIC. (s.f.). <em>Magnetismo: Fuerza eléctrica y campos magnéticos</em>. Consejo Superior de Investigaciones Científicas. <a href="https://museovirtual.csic.es/salas/magnetismo/mag3.htm" target="_blank" style="color: #0563c1; text-decoration: underline;">https://museovirtual.csic.es/salas/magnetismo/mag3.htm</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Organización Mundial de la Salud. (2024). <em>Calidad del aire ambiente (exterior) y salud</em>. <a href="https://share.google/p0clFP2cTrgDbxBSO" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/p0clFP2cTrgDbxBSO</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0; word-wrap: break-word;">
+                                    Programa de las Naciones Unidas para el Medio Ambiente. (s.f.). <em>Coalición Clima y Aire Limpio</em>. <a href="https://share.google/Dr7CRTYGMCeaoGSOf" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/Dr7CRTYGMCeaoGSOf</a>
+                                </p>
+                            </div>
+                        </div>
+                    `
+                },
+                en: { 
+                    titulo: 'References', 
+                    texto: 'List of sources in APA format (7th edition):', 
+                    html: `
+                        <div style="background: #ffffff; padding: 40px 50px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); max-width: 850px; margin: 0 auto; text-align: left; overflow-x: hidden;">
+                            <div style="font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 2; color: #000;">
+                                <h4 style="text-align: center; font-weight: bold; margin-bottom: 30px; font-size: 12pt;">References</h4>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Banco Mundial. (2022). <em>El cambio climático y la contaminación atmosférica</em>. <a href="https://share.google/NbCvgo6ld5GGXv53b" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/NbCvgo6ld5GGXv53b</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    BBVA. (2023). <em>¿Qué es la eficiencia energética y cómo se calcula?</em> <a href="https://www.bbva.com/es/sostenibilidad/que-es-la-eficiencia-energetica-y-como-secalcula/" target="_blank" style="color: #0563c1; text-decoration: underline;">https://www.bbva.com/es/sostenibilidad/que-es-la-eficiencia-energetica-y-como-secalcula/</a>
+                                </p>
+
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Credlix. (2024). <em>Explicación de los costos fijos y variables: controle el presupuesto de su empresa</em>. <a href="https://www.credlix.com/es-mx/blogs/explicacion-de-los-costos-fijos-y-variables-controle-el-presupuesto-de-su-empresa" target="_blank" style="color: #0563c1; text-decoration: underline;">https://www.credlix.com/es-mx/blogs/explicacion-de-los-costos-fijos-y-variables-controle-el-presupuesto-de-su-empresa</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Descubriendo Galápagos. (n.d.). <em>Tortuga marina verde</em>. <a href="https://descubriendogalapagos.ec/dg_species/tortuga-marina-verde/" target="_blank" style="color: #0563c1; text-decoration: underline;">https://descubriendogalapagos.ec/dg_species/tortuga-marina-verde/</a>
+                                </p>
+
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Fernández-Zamudio, F. (2016). <em>Importancia de los costes fijos y de oportunidad</em> (p. 10). [Libro sobre la optimización de costos fijos y variables en la economía verde]. <a href="https://redivia.gva.es/bitstream/handle/20.500.11939/7033/2016_Fern%c3%a1ndez-Zamudio_Importancia.pdf?sequence=1&isAllowed=y" target="_blank" style="color: #0563c1; text-decoration: underline;">https://redivia.gva.es/bitstream/handle/20.500.11939/7033/2016_Fern%c3%a1ndez-Zamudio_Importancia.pdf?sequence=1&isAllowed=y</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Fundación CRAM. (n.d.). <em>Tortuga verde (Chelonia mydas)</em>. <a href="https://share.google/oWYhdAzy6xfbAiHN9" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/oWYhdAzy6xfbAiHN9</a>
+                                </p>
+
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    IPADE. (2024). <em>Costos fijos y variables: estrategias para optimizarlos</em>. <a href="https://www.ipade.mx/newsmedia/economia-es/costos-fijos-y-variables-estrategias-para-optimizarlos/" target="_blank" style="color: #0563c1; text-decoration: underline;">https://www.ipade.mx/newsmedia/economia-es/costos-fijos-y-variables-estrategias-para-optimizarlos/</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    MarAlliance. (n.d.). <em>Esperanza para los océanos: la tortuga verde ya no está en peligro de extinción</em>. <a href="https://share.google/SJXAZPqAJiww3KyR3" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/SJXAZPqAJiww3KyR3</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Museo Virtual del CSIC. (n.d.). <em>Magnetismo: Fuerza eléctrica y campos magnéticos</em>. Consejo Superior de Investigaciones Científicas. <a href="https://museovirtual.csic.es/salas/magnetismo/mag3.htm" target="_blank" style="color: #0563c1; text-decoration: underline;">https://museovirtual.csic.es/salas/magnetismo/mag3.htm</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0 0 20px 0; word-wrap: break-word;">
+                                    Organización Mundial de la Salud. (2024). <em>Calidad del aire ambiente (exterior) y salud</em>. <a href="https://share.google/p0clFP2cTrgDbxBSO" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/p0clFP2cTrgDbxBSO</a>
+                                </p>
+                                
+                                <p style="text-indent: -0.5in; padding-left: 0.5in; margin: 0; word-wrap: break-word;">
+                                    Programa de las Naciones Unidas para el Medio Ambiente. (n.d.). <em>Coalición Clima y Aire Limpio</em>. <a href="https://share.google/Dr7CRTYGMCeaoGSOf" target="_blank" style="color: #0563c1; text-decoration: underline;">https://share.google/Dr7CRTYGMCeaoGSOf</a>
+                                </p>
+                            </div>
+                        </div>
+                    ` 
+                }
+            }
+        }
+        const modal = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+        const modalIcon = document.getElementById('modalIcon');
+        let modalClaveActual = null; let modalEmojiActual = null;
+
+        function abrirModal(clave, emoji) {
+            modalClaveActual = clave;
+            modalEmojiActual = emoji;
+            const data = asignaturasData[clave];
+            
+            if (data && data[idiomaActual]) {
+                modalTitle.textContent = data[idiomaActual].titulo;
+                modalText.textContent = data[idiomaActual].texto;
+                modalIcon.textContent = emoji;
+
+                const mediaContainer = document.getElementById('mediaContainer');
+                const customHtml = document.getElementById('modalCustomHtml');
+                const video = document.getElementById('modalVideo');
+                const imagen = document.getElementById('modalImage');
+
+                mediaContainer.style.display = 'none';
+                customHtml.style.display = 'none';
+                video.style.display = 'none';
+                imagen.style.display = 'none';
+                video.pause(); 
+                customHtml.innerHTML = ''; 
+
+                if (data.fondo) {
+                    modal.style.background = data.fondo;
+                    modal.style.backgroundSize = 'cover';
+                    modal.style.backgroundPosition = 'center';
+                } else {
+                    modal.style.background = 'rgba(15, 62, 34, 0.4)';
+                }
+
+                if (data[idiomaActual].html) {
+                    customHtml.innerHTML = data[idiomaActual].html;
+                    customHtml.style.display = 'block';
+                }
+
+                // 🌟 ESTO ES LO QUE HACE QUE LOS GRÁFICOS APAREZCAN 🌟
+                if (clave === 'mat') {
+                    setTimeout(dibujarDashboard, 100); 
+                }
+
+                if (data.tipo === 'video') {
+                    mediaContainer.style.display = 'block';
+                    video.style.display = 'block';
+                    video.src = data.media;
+                    video.load(); 
+                } else if (data.tipo === 'imagen') {
+                    mediaContainer.style.display = 'block';
+                    imagen.style.display = 'block';
+                    imagen.src = data.media;
+                }
+
+                modal.style.display = 'flex';
+                setTimeout(() => { modal.classList.add('show'); }, 10);
+            }
+        }
+
+        function cerrarModal() {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modalClaveActual = null;
+                modalEmojiActual = null;
+                const video = document.getElementById('modalVideo');
+                if (video) video.pause(); 
+            }, 300);
+        }
+
+        window.onclick = function (event) {
+            if (event.target == modal) { cerrarModal(); }
+        }
+
+        /* =========================================
+           LÓGICA DEL DASHBOARD DE MATEMÁTICAS (POWER BI STYLE)
+        ========================================= */
+        let chart1 = null; let chart2 = null; let chart3 = null;
+
+        function dibujarDashboard() {
+            if (chart1) chart1.destroy();
+            if (chart2) chart2.destroy();
+            if (chart3) chart3.destroy();
+
+            Chart.defaults.font.family = "'Poppins', sans-serif";
+            Chart.defaults.color = '#5c7566';
+
+            // 1. Gráfico de Barras
+            const ctx1 = document.getElementById('chartClasificacion');
+            if(!ctx1) return; // Por si acaso no existe aún en el HTML
+            
+            chart1 = new Chart(ctx1.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Separan todo', 'Separan algunos', 'No separan'],
+                    datasets: [{
+                        label: '% de Familias',
+                        data: [30.2, 49.2, 20.6], 
+                        backgroundColor: ['#247543', '#44a86b', '#a3e4be'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false }, 
+                        title: { display: true, text: 'Hábito de Clasificación', font: { size: 14, weight: '600' } },
+                        tooltip: { callbacks: { label: (ctx) => ctx.raw + '%' } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 60, grid: { borderDash: [5, 5] }, ticks: { callback: (val) => val + '%' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 2. Gráfico de Dona
+            const ctx2 = document.getElementById('chartMingas');
+            if(!ctx2) return;
+
+            chart2 = new Chart(ctx2.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sí participarían', 'No participarían'],
+                    datasets: [{
+                        data: [58.7, 41.3], 
+                        backgroundColor: ['#247543', '#e0ece4'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, cutout: '70%', 
+                    plugins: { 
+                        title: { display: true, text: 'Participación en Mingas', font: { size: 14, weight: '600' } } 
+                    } 
+                }
+            });
+
+            // 3. Gráfico de Barras Horizontales
+            const ctx3 = document.getElementById('chartImpacto');
+            if(!ctx3) return;
+
+            chart3 = new Chart(ctx3.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Animales', 'Plantas', 'Personas'],
+                    datasets: [{
+                        label: 'Principalmente Afectados (%)',
+                        data: [54, 23.8, 22.2], 
+                        backgroundColor: '#44a86b',
+                        borderRadius: 6
+                    }]
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false }, 
+                        title: { display: true, text: '¿A quién afecta más la basura?', font: { size: 14, weight: '600' } } 
+                    },
+                    scales: {
+                        x: { beginAtZero: true, max: 60, grid: { borderDash: [5, 5] }, ticks: { callback: (val) => val + '%' } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
